@@ -7,7 +7,7 @@ function setup(grunt) {
       },
       icons: {
         src: 'img_src/restaurant.png',
-        dest: 'img/favicon',
+        dest: 'dist/img/favicon',
       },
     },
     responsive_images: {
@@ -26,7 +26,7 @@ function setup(grunt) {
           expand: true,
           src: ['*.jpg'],
           cwd: 'img_src/',
-          dest: 'img/',
+          dest: 'dist/img/',
         }],
       },
     },
@@ -42,7 +42,7 @@ function setup(grunt) {
     mkdir: {
       dev: {
         options: {
-          create: ['img', 'img/favicon']
+          create: ['dist/img', 'dist/img/favicon']
         },
       },
     },
