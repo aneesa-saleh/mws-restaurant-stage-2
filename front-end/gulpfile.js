@@ -16,11 +16,12 @@ require('gulp-grunt')(gulp, {
 });
 
 gulp.task('serve', ['styles'], () => {
+  gulp.watch('./*.html', ['copy-html']);
   gulp.watch('scss/*.scss', ['styles']);
+  gulp.watch('js/*.js', ['scripts']);
   gulp.watch('./dist/*.html').on('change', browserSync.reload);
   gulp.watch('./dist/js/*.js').on('change', browserSync.reload);
   gulp.watch('./dist/css/*.css').on('change', browserSync.reload);
-  gulp.watch('./*.html', ['copy-html']);
 
   browserSync.init({
     server: './dist',
