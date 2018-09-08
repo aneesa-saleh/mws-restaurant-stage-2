@@ -1,23 +1,20 @@
 const staticCacheName = 'restaurant-reviews-static-v2';
+const restaurantImagesCache = 'restaurant-reviews-restaurant-images';
+const allCaches = [
+  staticCacheName,
+  restaurantImagesCache,
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(staticCacheName).then(cache => cache.addAll([
       '/',
       '/restaurant.html',
-      '/css/styles.css',
+      '/css/restaurant-details.css',
+      '/css/restaurants-list.css',
+      '/js/dbhelper.js',
       '/js/main.js',
       '/js/restaurant_info.js',
-      '/img/1-800_large.jpg', '/img/1_wide-800_large.jpg', '/img/1-600_medium_1x.jpg', '/img/1-800_medium_2x.jpg', '/img/1_crop-400_small_1x.jpg', '/img/1_crop-800_small_2x.jpg',
-      '/img/2-800_large.jpg', '/img/2_wide-800_large.jpg', '/img/2-600_medium_1x.jpg', '/img/2-800_medium_2x.jpg', '/img/2-400_small_1x.jpg', '/img/2-800_small_2x.jpg',
-      '/img/3-800_large.jpg', '/img/3_wide-800_large.jpg', '/img/3-600_medium_1x.jpg', '/img/3-800_medium_2x.jpg', '/img/3-400_small_1x.jpg', '/img/3-800_small_2x.jpg',
-      '/img/4-800_large.jpg', '/img/4_wide-800_large.jpg', '/img/4-600_medium_1x.jpg', '/img/4-800_medium_2x.jpg', '/img/4-400_small_1x.jpg', '/img/4-800_small_2x.jpg',
-      '/img/5-800_large.jpg', '/img/5_wide-800_large.jpg', '/img/5-600_medium_1x.jpg', '/img/5-800_medium_2x.jpg', '/img/5_crop-400_small_1x.jpg', '/img/5_crop-800_small_2x.jpg',
-      '/img/6-800_large.jpg', '/img/6_wide-800_large.jpg', '/img/6-600_medium_1x.jpg', '/img/6-800_medium_2x.jpg', '/img/6_crop-400_small_1x.jpg', '/img/6_crop-800_small_2x.jpg',
-      '/img/7-800_large.jpg', '/img/7_wide-800_large.jpg', '/img/7-600_medium_1x.jpg', '/img/7-800_medium_2x.jpg', '/img/7-400_small_1x.jpg', '/img/7-800_small_2x.jpg',
-      '/img/8-800_large.jpg', '/img/8_wide-800_large.jpg', '/img/8-600_medium_1x.jpg', '/img/8-800_medium_2x.jpg', '/img/8-400_small_1x.jpg', '/img/8-800_small_2x.jpg',
-      '/img/9-800_large.jpg', '/img/9_wide-800_large.jpg', '/img/9-600_medium_1x.jpg', '/img/9-800_medium_2x.jpg', '/img/9-400_small_1x.jpg', '/img/9-800_small_2x.jpg',
-      '/img/10-800_large.jpg', '/img/10_wide-800_large.jpg', '/img/10-600_medium_1x.jpg', '/img/10-800_medium_2x.jpg', '/img/10_crop-400_small_1x.jpg', '/img/10_crop-800_small_2x.jpg',
       'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css',
       'https://unpkg.com/leaflet@1.3.1/dist/leaflet.js',
       'https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700',
@@ -32,15 +29,42 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(cacheNames => Promise.all(
       cacheNames.filter(cacheName => (
-        cacheName.startsWith('restaurant-reviews-') && cacheName !== staticCacheName
+        cacheName.startsWith('restaurant-reviews-') && !allCaches.includes(cacheName)
       )).map(cacheName => caches.delete(cacheName)),
     )).catch(error => console.log(error)),
   );
 });
 
 self.addEventListener('fetch', (event) => {
+  const requestUrl = new URL(event.request.url);
+
+  if (requestUrl.origin === location.origin) {
+    const restaurantImagePathRegex = /img\/[0-9_\-a-zA-Z]+\.jpg/;
+    if (restaurantImagePathRegex.test(requestUrl.pathname)) {
+      event.respondWith(serveRestaurantImage(event.request));
+      return;
+    }
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => response || fetch(event.request)),
   );
 });
+
+const serveRestaurantImage = (request) => {
+  // image urls have multiple - and _ for orientation, crop, pixel density and screen size
+  // the relevant part of the url is before the first -
+  const storageUrl = request.url.split('-')[0];
+
+  return caches.open(restaurantImagesCache).then(
+    cache => cache.match(storageUrl).then((response) => {
+      if (response) return response;
+
+      return fetch(request).then((networkResponse) => {
+        cache.put(storageUrl, networkResponse.clone());
+        return networkResponse;
+      });
+    }),
+  );
+};
