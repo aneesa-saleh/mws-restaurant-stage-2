@@ -49,14 +49,9 @@ self.addEventListener('fetch', (event) => {
       return;
     }
 
+    // cache should match index.html to /
     if (requestUrl.pathname.startsWith('/index.html')) {
       event.respondWith(caches.match('/')
-        .then(response => response || fetch(event.request)));
-      return;
-    }
-
-    if (requestUrl.pathname.startsWith('/restaurant.html')) {
-      event.respondWith(caches.match('/restaurant.html')
         .then(response => response || fetch(event.request)));
       return;
     }
@@ -66,7 +61,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.match(event.request)
+    caches.match(event.request, { ignoreSearch: true }) // ignore search for /restaurant.html?id=X
       .then(response => response || fetch(event.request)),
   );
 });
