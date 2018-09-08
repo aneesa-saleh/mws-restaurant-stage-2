@@ -1,8 +1,10 @@
 const staticCacheName = 'restaurant-reviews-static-v2';
 const restaurantImagesCache = 'restaurant-reviews-restaurant-images';
+const mapboxTilesCache = 'restaurant-reviews-map-tiles';
 const allCaches = [
   staticCacheName,
   restaurantImagesCache,
+  mapboxTilesCache,
 ];
 
 self.addEventListener('install', (event) => {
@@ -10,6 +12,7 @@ self.addEventListener('install', (event) => {
     caches.open(staticCacheName).then(cache => cache.addAll([
       '/',
       '/restaurant.html',
+      '/data/restaurants.json',
       '/css/restaurant-details.css',
       '/css/restaurants-list.css',
       '/js/dbhelper.js',
@@ -24,6 +27,7 @@ self.addEventListener('install', (event) => {
     ])).catch(error => console.log(error)),
   );
 });
+
 self.addEventListener('activate', (event) => {
   // delete the old versions of the cache
   event.waitUntil(
@@ -44,6 +48,9 @@ self.addEventListener('fetch', (event) => {
       event.respondWith(serveRestaurantImage(event.request));
       return;
     }
+  } else if (requestUrl.origin === 'https://api.tiles.mapbox.com') {
+    event.respondWith(serveMapboxTiles(event.request));
+    return;
   }
 
   event.respondWith(
@@ -68,3 +75,14 @@ const serveRestaurantImage = (request) => {
     }),
   );
 };
+
+const serveMapboxTiles = request => caches.open(mapboxTilesCache).then(
+  cache => cache.match(request.url).then((response) => {
+    if (response) return response;
+
+    return fetch(request).then((networkResponse) => {
+      cache.put(request.url, networkResponse.clone());
+      return networkResponse;
+    });
+  }),
+);

@@ -1,8 +1,8 @@
 let restaurants;
 let neighborhoods;
 let cuisines;
-var newMap;
-var markers = [];
+let newMap;
+const markers = [];
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
   registerServiceWorker();
+  setInterval(cleanMapboxTilesCache, 5000);
 });
 
 /**
@@ -212,11 +213,4 @@ const addMarkersToMap = (restaurants = self.restaurants) => {
     }
     self.markers.push(marker);
   });
-};
-
-const registerServiceWorker = () => {
-  if (!navigator.serviceWorker) return;
-
-  navigator.serviceWorker.register('/service-worker.js')
-    .catch(error => console.log(error));
 };

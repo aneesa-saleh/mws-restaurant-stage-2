@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   }
   updateRestaurantContainerAria(); // set initial aria values
   registerServiceWorker();
+  setInterval(cleanMapboxTilesCache, 5000);
 });
 
 /**
@@ -255,11 +256,4 @@ const getParameterByName = (name, url) => {
   if (!results) return null;
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
-};
-
-const registerServiceWorker = () => {
-  if (!navigator.serviceWorker) return;
-
-  navigator.serviceWorker.register('/service-worker.js')
-    .catch(error => console.log(error));
 };
