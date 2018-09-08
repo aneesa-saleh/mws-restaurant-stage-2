@@ -48,6 +48,18 @@ self.addEventListener('fetch', (event) => {
       event.respondWith(serveRestaurantImage(event.request));
       return;
     }
+
+    if (requestUrl.pathname.startsWith('/index.html')) {
+      event.respondWith(caches.match('/')
+        .then(response => response || fetch(event.request)));
+      return;
+    }
+
+    if (requestUrl.pathname.startsWith('/restaurant.html')) {
+      event.respondWith(caches.match('/restaurant.html')
+        .then(response => response || fetch(event.request)));
+      return;
+    }
   } else if (requestUrl.origin === 'https://api.tiles.mapbox.com') {
     event.respondWith(serveMapboxTiles(event.request));
     return;
