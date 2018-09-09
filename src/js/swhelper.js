@@ -26,7 +26,5 @@ const openDatabase = () => {
     const store = upgradeDb.createObjectStore('restaurants', {
       keyPath: 'id',
     });
-    store.createIndex('by-neighborhood', 'neighborhood');
-    store.createIndex('by-cuisine', 'cuisine_type');
   });
 };
