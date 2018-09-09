@@ -18,3 +18,15 @@ const cleanMapboxTilesCache = () => {
     }),
   );
 };
+
+const openDatabase = () => {
+  if (!navigator.serviceWorker) return Promise.resolve();
+
+  return idb.open('restaurant-reviews', 1, (upgradeDb) => {
+    const store = upgradeDb.createObjectStore('restaurants', {
+      keyPath: 'id',
+    });
+    store.createIndex('by-neighborhood', 'neighborhood');
+    store.createIndex('by-cuisine', 'cuisine_type');
+  });
+};

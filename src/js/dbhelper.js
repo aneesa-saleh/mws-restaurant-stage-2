@@ -1,3 +1,5 @@
+const dbPromise = openDatabase();
+
 /**
  * Common database helper functions.
  */
@@ -15,14 +17,46 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants() {
-    return fetch(`${DBHelper.DATABASE_URL}/restaurants`)
-      .then((response) => {
-        if (!response.ok) {
-          const error = (`Request failed. Returned status of ${response.status}`);
-          return Promise.reject(error);
+    return dbPromise.then((db) => {
+      const restaurantsURL = `${DBHelper.DATABASE_URL}/restaurants`;
+
+      if (!db) {
+        // make regular fetch call
+        return fetch(restaurantsURL)
+          .then((response) => {
+            if (!response.ok) {
+              const error = (`Request failed. Returned status of ${response.status}`);
+              return Promise.reject(error);
+            }
+            return response.json();
+          });
+      }
+
+      // return restaurants from IDB
+      let store = db.transaction('restaurants').objectStore('restaurants');
+      return store.getAll().then((restaurants) => {
+        // update IDB restaurants with fetch response even if values from IDB will be returned
+        const fetchResponse = fetch(restaurantsURL)
+          .then((response) => {
+            if (!response.ok) {
+              const error = (`Request failed. Returned status of ${response.status}`);
+              return Promise.reject(error);
+            }
+            const responseJSON = response.clone().json();
+            responseJSON.then((restaurants) => {
+              store = db.transaction('restaurants', 'readwrite').objectStore('restaurants');
+              restaurants.forEach((restaurant) => {
+                store.put(restaurant);
+              });
+            });
+            return response.json();
+          });
+        if (restaurants && restaurants.length > 0) {
+          return restaurants;
         }
-        return response.json();
-      })
+        return fetchResponse;
+      });
+    });
   }
 
   /**
