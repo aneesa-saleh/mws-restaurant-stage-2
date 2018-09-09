@@ -132,7 +132,12 @@ header {
 			font-weight: 100;
 			letter-spacing: 5px;
 			text-transform: uppercase;
-		}
+
+			&:hover, &:active, &:focus {
+				color: #fff;
+				text-decoration: underline;
+			}
+		} /* a */
 	} /* h1 */
 } /* header */
 
