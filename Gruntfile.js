@@ -2,11 +2,11 @@ function setup(grunt) {
   grunt.initConfig({
     favicons: {
       options: {
-        html: 'index.html',
+        html: 'dist/index.html',
         HTMLPrefix: 'img/favicon/',
       },
       icons: {
-        src: 'img_src/restaurant.png',
+        src: './src/img/restaurant.png',
         dest: 'dist/img/favicon',
       },
     },
@@ -25,7 +25,7 @@ function setup(grunt) {
         files: [{
           expand: true,
           src: ['*.jpg'],
-          cwd: 'img_src/',
+          cwd: './src/img/',
           dest: 'dist/img/',
         }],
       },
@@ -42,7 +42,7 @@ function setup(grunt) {
     mkdir: {
       dev: {
         options: {
-          create: ['dist/img', 'dist/img/favicon']
+          create: ['dist','dist/img', 'dist/img/favicon']
         },
       },
     },
