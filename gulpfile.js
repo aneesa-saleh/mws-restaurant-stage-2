@@ -19,7 +19,7 @@ gulp.task('serve', ['styles'], () => {
   gulp.watch('./src/*.html', ['copy-html']);
   gulp.watch('./src/scss/*.scss', ['styles']);
   gulp.watch('./src/js/*.js', ['scripts']);
-  gulp.watch('./src/service-worker.js', ['copy-sw']);
+  gulp.watch('./src/service-worker.js', ['sw']);
   gulp.watch('./dist/*.html').on('change', browserSync.reload);
   gulp.watch('./dist/js/*.js').on('change', browserSync.reload);
   gulp.watch('./dist/css/*.css').on('change', browserSync.reload);
@@ -48,14 +48,30 @@ gulp.task('copy-html', () => {
     .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('copy-sw', () => {
-  gulp.src('./src/service-worker.js')
-    .pipe(gulp.dest('./dist'));
-});
-
 gulp.task('copy-svg', () => {
   gulp.src('./src/img/*.svg')
     .pipe(gulp.dest('./dist/img'));
+});
+
+gulp.task('sw', () => {
+  gulp.src('./src/service-worker.js')
+  .pipe(sourcemaps.init())
+  .pipe(babel({
+    presets: ['@babel/env'],
+  }))
+  .pipe(sourcemaps.write())
+  .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('sw-dist', () => {
+  gulp.src('./src/service-worker.js')
+  .pipe(sourcemaps.init())
+  .pipe(babel({
+    presets: ['@babel/env'],
+  }))
+  .pipe(sourcemaps.write())
+  .pipe(uglify())
+  .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('scripts', () => {
@@ -82,10 +98,10 @@ gulp.task('scripts-dist', () => {
 gulp.task('dist', [
   'grunt-imgs',
   'copy-html',
-  'copy-sw',
+  'sw-dist',
   'copy-svg',
   'styles',
   'scripts-dist',
 ]);
 
-gulp.task('default', ['grunt-imgs', 'copy-html', 'copy-sw', 'copy-svg', 'styles', 'scripts', 'serve']);
+gulp.task('default', ['grunt-imgs', 'copy-html', 'sw', 'copy-svg', 'styles', 'scripts', 'serve']);
