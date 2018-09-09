@@ -18,6 +18,8 @@ self.addEventListener('install', (event) => {
       '/js/dbhelper.js',
       '/js/main.js',
       '/js/restaurant_info.js',
+      '/img/offline.svg',
+      '/img/offline_wide.svg',
       'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css',
       'https://unpkg.com/leaflet@1.3.1/dist/leaflet.js',
       'https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700',
@@ -78,6 +80,12 @@ const serveRestaurantImage = (request) => {
       return fetch(request).then((networkResponse) => {
         cache.put(storageUrl, networkResponse.clone());
         return networkResponse;
+      }).catch((error) => {
+        console.log(error);
+        // use of offline images inspired by Salah Hamza's stage 1 project
+        // Available at https://github.com/SalahHamza/mws-restaurant-stage-1/blob/master/sw.js
+        if (request.url.includes('wide')) return caches.match('/img/offline_wide.svg');
+        return caches.match('/img/offline.svg');
       });
     }),
   );

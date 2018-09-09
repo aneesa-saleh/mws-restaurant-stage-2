@@ -53,6 +53,11 @@ gulp.task('copy-sw', () => {
     .pipe(gulp.dest('./dist'));
 });
 
+gulp.task('copy-svg', () => {
+  gulp.src('./img_src/*.svg')
+    .pipe(gulp.dest('./dist/img'));
+});
+
 gulp.task('scripts', () => {
   gulp.src('js/*.js')
     .pipe(sourcemaps.init())
@@ -78,8 +83,9 @@ gulp.task('dist', [
   'grunt-imgs',
   'copy-html',
   'copy-sw',
+  'copy-svg',
   'styles',
   'scripts-dist',
 ]);
 
-gulp.task('default', ['grunt-imgs', 'copy-html', 'copy-sw', 'styles', 'scripts', 'serve']);
+gulp.task('default', ['grunt-imgs', 'copy-html', 'copy-sw', 'copy-svg', 'styles', 'scripts', 'serve']);
