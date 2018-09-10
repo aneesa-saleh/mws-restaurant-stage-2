@@ -2,7 +2,7 @@ function setup(grunt) {
   grunt.initConfig({
     favicons: {
       options: {
-        html: 'dist/index.html',
+        html: 'src/index.html',
         HTMLPrefix: 'img/favicon/',
       },
       icons: {
@@ -11,7 +11,7 @@ function setup(grunt) {
       },
     },
     responsive_images: {
-      dev: {
+      restaurant_images: {
         options: {
           engine: 'im',
           sizes: [
@@ -29,6 +29,21 @@ function setup(grunt) {
           dest: 'dist/img/',
         }],
       },
+      icons: {
+        options: {
+          engine: 'im',
+          sizes: [
+            { width: 512, quality: 100 },
+            { width: 192, quality: 100 },
+          ],
+        },
+        files: [{
+          expand: true,
+          src: ['restaurant.png'],
+          cwd: './src/img/',
+          dest: 'dist/img/icons',
+        }],
+      },
     },
 
     /* Clear out the images directory if it exists */
@@ -42,7 +57,7 @@ function setup(grunt) {
     mkdir: {
       dev: {
         options: {
-          create: ['dist','dist/img', 'dist/img/favicon']
+          create: ['dist', 'dist/img', 'dist/img/favicon', 'dist/img/icons'],
         },
       },
     },
