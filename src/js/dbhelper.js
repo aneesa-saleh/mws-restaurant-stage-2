@@ -34,7 +34,7 @@ class DBHelper {
 
       // return restaurants from IDB
       let store = db.transaction('restaurants').objectStore('restaurants');
-      return store.getAll().then((restaurants) => {
+      return store.getAll().then((idbRestaurants) => {
         const fetchResponse = fetch(restaurantsURL)
           .then((response) => {
             if (!response.ok) {
@@ -43,16 +43,16 @@ class DBHelper {
             }
             const responseJSON = response.clone().json();
             // update IDB restaurants with fetch response even if values from IDB will be returned
-            responseJSON.then((restaurants) => {
+            responseJSON.then((fetchedRestaurants) => {
               store = db.transaction('restaurants', 'readwrite').objectStore('restaurants');
-              restaurants.forEach((restaurant) => {
+              fetchedRestaurants.forEach((restaurant) => {
                 store.put(restaurant);
               });
             });
             return response.json();
           });
-        if (restaurants && restaurants.length > 0) {
-          return restaurants;
+        if (idbRestaurants && idbRestaurants.length > 0) {
+          return idbRestaurants;
         }
         return fetchResponse;
       });
@@ -81,7 +81,7 @@ class DBHelper {
       // return restaurant from IDB
       let store = db.transaction('restaurants').objectStore('restaurants');
       // id comes as a string from the url, convert to a number before lookup
-      return store.get(Number.parseInt(id, 10)).then((restaurant) => {
+      return store.get(Number.parseInt(id, 10)).then((idbRestaurant) => {
         const fetchResponse = fetch(restaurantByIdURL)
           .then((response) => {
             if (!response.ok) {
@@ -90,30 +90,16 @@ class DBHelper {
             }
             const responseJSON = response.clone().json();
             // update IDB restaurants with fetch response even if value from IDB will be returned
-            responseJSON.then((restaurant) => {
+            responseJSON.then((fetchedRestaurant) => {
               store = db.transaction('restaurants', 'readwrite').objectStore('restaurants');
-              store.put(restaurant);
+              store.put(fetchedRestaurant);
             });
             return response.json();
           });
-
-          console.log(restaurant);
-        return restaurant || fetchResponse;
+        return idbRestaurant || fetchResponse;
       });
-    })
-      .then((restaurant) => { callback(null, restaurant); })
+    }).then((restaurant) => { callback(null, restaurant); })
       .catch((error) => { callback(error, null); });
-
-    // DBHelper.fetchRestaurants().then((restaurants) => {
-    //   const restaurant = restaurants.find(r => r.id == id);
-    //   if (restaurant) { // Got the restaurant
-    //     callback(null, restaurant);
-    //   } else { // Restaurant does not exist in the database
-    //     callback('Restaurant does not exist', null);
-    //   }
-    // }).catch((error) => {
-    //   callback(error, null);
-    // });
   }
 
   /**

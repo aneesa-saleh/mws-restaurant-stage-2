@@ -1,5 +1,5 @@
 let restaurant;
-var newMap;
+let newMap;
 let matchesMediaQuery;
 const mediaQuery = '(min-width: 800px)';
 
