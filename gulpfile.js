@@ -16,16 +16,16 @@ require('gulp-grunt')(gulp, {
 });
 
 gulp.task('serve', ['styles'], () => {
-  gulp.watch('./src/*.html', ['copy-html']);
-  gulp.watch('./src/scss/*.scss', ['styles']);
-  gulp.watch('./src/js/*.js', ['scripts']);
-  gulp.watch('./src/service-worker.js', ['sw']);
-  gulp.watch('./dist/*.html').on('change', browserSync.reload);
-  gulp.watch('./dist/js/*.js').on('change', browserSync.reload);
-  gulp.watch('./dist/css/*.css').on('change', browserSync.reload);
+  gulp.watch('src/*.html', ['copy-html']);
+  gulp.watch('src/scss/*.scss', ['styles']);
+  gulp.watch('src/js/*.js', ['scripts']);
+  gulp.watch('src/service-worker.js', ['sw']);
+  gulp.watch('dist/*.html').on('change', browserSync.reload);
+  gulp.watch('dist/js/*.js').on('change', browserSync.reload);
+  gulp.watch('dist/css/*.css').on('change', browserSync.reload);
 
   browserSync.init({
-    server: './dist',
+    server: 'dist',
     port: 8000,
   });
 });
@@ -37,50 +37,50 @@ gulp.task('grunt-imgs', [
 gulp.task('grunt-favicons', ['favicons']);
 
 gulp.task('styles', () => {
-  gulp.src('./src/scss/*.scss')
+  gulp.src('src/scss/*.scss')
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(autoprefixer({ browsers: ['last 2 versions'] }))
-    .pipe(gulp.dest('./dist/css'));
+    .pipe(gulp.dest('dist/css'));
 });
 
 gulp.task('copy-html', () => {
-  gulp.src('./src/*.html')
-    .pipe(gulp.dest('./dist'));
+  gulp.src('src/*.html')
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('copy-manifest', () => {
-  gulp.src('./src/manifest.json')
-    .pipe(gulp.dest('./dist'));
+  gulp.src('src/manifest.json')
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('copy-svg', () => {
-  gulp.src('./src/img/*.svg')
-    .pipe(gulp.dest('./dist/img'));
+  gulp.src('src/img/*.svg')
+    .pipe(gulp.dest('dist/img'));
 });
 
 gulp.task('sw', () => {
-  gulp.src('./src/service-worker.js')
+  gulp.src('src/service-worker.js')
     .pipe(sourcemaps.init())
     .pipe(babel({
       presets: ['@babel/env'],
     }))
     .pipe(sourcemaps.write())
-    .pipe(gulp.dest('./dist'));
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('sw-dist', () => {
-  gulp.src('./src/service-worker.js')
+  gulp.src('src/service-worker.js')
     .pipe(sourcemaps.init())
     .pipe(babel({
       presets: ['@babel/env'],
     }))
     .pipe(sourcemaps.write())
     .pipe(uglify())
-    .pipe(gulp.dest('./dist'));
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('scripts', () => {
-  gulp.src('./src/js/*.js')
+  gulp.src('src/js/*.js')
     .pipe(sourcemaps.init())
     .pipe(babel({
       presets: ['@babel/env'],
@@ -90,7 +90,7 @@ gulp.task('scripts', () => {
 });
 
 gulp.task('scripts-dist', () => {
-  gulp.src('./src/js/*.js')
+  gulp.src('src/js/*.js')
     .pipe(sourcemaps.init())
     .pipe(babel({
       presets: ['@babel/env'],

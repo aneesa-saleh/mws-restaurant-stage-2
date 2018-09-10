@@ -6,7 +6,7 @@ function setup(grunt) {
         HTMLPrefix: 'img/favicon/',
       },
       icons: {
-        src: './src/img/restaurant.png',
+        src: 'src/img/restaurant.png',
         dest: 'dist/img/favicon',
       },
     },
@@ -25,7 +25,7 @@ function setup(grunt) {
         files: [{
           expand: true,
           src: ['*.jpg'],
-          cwd: './src/img/',
+          cwd: 'src/img/',
           dest: 'dist/img/',
         }],
       },
@@ -40,7 +40,7 @@ function setup(grunt) {
         files: [{
           expand: true,
           src: ['restaurant.png'],
-          cwd: './src/img/',
+          cwd: 'src/img/',
           dest: 'dist/img/icons',
         }],
       },
